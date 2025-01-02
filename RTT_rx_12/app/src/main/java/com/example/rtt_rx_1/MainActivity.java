@@ -98,44 +98,6 @@ public class MainActivity extends AppCompatActivity {
 
         labelInput = findViewById(R.id.label_input);  // Initialize EditText for label input
 
-//        // Set up the spinner to change the frequency
-//        frequencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-//                switch (position) {
-//                    case 0:  // 1 Hz
-//                        INTERVAL = 1000;  // 1 second
-//                        break;
-//                    case 1:  // 5 Hz
-//                        INTERVAL = 200;   // 0.2 seconds
-//                        break;
-//                    case 2:  // 10 Hz
-//                        INTERVAL = 100;   // 0.1 seconds
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parentView) {
-//                // Default to 1 Hz if nothing is selected
-//                INTERVAL = 1000;
-//            }
-//        });
-//
-//        // Set up the ranging mode spinner to select ranging mode
-//        ranging_mode_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-//                selectedRangingMode = position; // 0 for specific BSSID, 1 for 802.11mc APs
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parentView) {
-//                // Default to specific BSSID if nothing is selected
-//                selectedRangingMode = 0;
-//            }
-//        });
-
         // Handle Start button click
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -209,9 +171,6 @@ public class MainActivity extends AppCompatActivity {
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
 
-
-
-
     }
 
     // Handle the result of the location permission request
@@ -237,8 +196,6 @@ public class MainActivity extends AppCompatActivity {
             return;  // Don't start if already active
         }
 
-//        String filenameStemp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        // Retrieve the label from the EditText
         String filenameStemp = labelInput.getText().toString().trim();
 
         // Create or open the log file
@@ -261,8 +218,11 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 if (selectedRangingMode == 0) {
                     startRanging_mc();  // Perform the ranging operation to 802.11mc APs
-                } else {
+                } else if (selectedRangingMode == 1){
                     startRanging_selected(targetBssids);  // Perform ranging to specific BSSID
+                }
+                else{
+                    startRanging_All();
                 }
                 rttHandler.postDelayed(this, INTERVAL);  // Re-run this task after INTERVAL ms
             }
@@ -346,44 +306,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (SecurityException e) {
             rttResultTextView.setText("Permission not granted.");
         }
-//        // Perform a Wi-Fi scan and get the list of ScanResults
-//        List<ScanResult> scanResults = wifiManager.getScanResults();
-//
-//        // Find the ScanResult that matches the pre-selected BSSID
-//        ScanResult selectedAp = null;
-//        for (ScanResult result : scanResults) {
-//            if (result.BSSID.equals(targetBssid)) {
-//                selectedAp = result;
-//                break;
-//            }
-//        }
-//        if (selectedAp == null) {
-//            // No matching BSSID found
-//            rttResultTextView.setText("BSSID not found: " + targetBssid);
-//            return;
-//        }
-//
-//        // Build the RangingRequest with the selected BSSID
-//        RangingRequest rangingRequest = new RangingRequest.Builder()
-//                .addAccessPoint(selectedAp)  // Add only the selected BSSID
-//                .build();
-//
-//        try {
-//            wifiRttManager.startRanging(rangingRequest, getMainExecutor(), new RangingResultCallback() {
-//                @Override
-//                public void onRangingFailure(int code) {
-//                    rttResultTextView.setText("Ranging failed with code: " + code);
-//                }
-//
-//                @Override
-//                public void onRangingResults(@NonNull List<RangingResult> results) {
-//                    processRangingResults(results);  // Handle the results
-//                }
-//            });
-//        } catch (SecurityException e) {
-//            rttResultTextView.setText("Permission not granted.");
-//        }
-
     }
 
     private void startRanging_mc() {
@@ -431,6 +353,54 @@ public class MainActivity extends AppCompatActivity {
             rttResultTextView.setText("Permission not granted.");
         }
     }
+
+    private void startRanging_All() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Location permission is required for Wi-Fi scanning.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Perform a Wi-Fi scan
+        wifiManager.startScan();  // Start a new scan to get fresh results
+        List<ScanResult> scanResults = wifiManager.getScanResults();  // Get the scan results
+
+        StringBuilder resultBuilder = new StringBuilder();
+        StringBuilder rawResultBuilder = new StringBuilder();
+
+        // Get the current timestamp
+        long timeInMillis = System.currentTimeMillis();
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(timeInMillis));
+
+        for (ScanResult result : scanResults) {
+            String apBssid = result.BSSID;
+            String apSsid = result.SSID;
+            long timestemp = result.timestamp;
+            int rssi = result.level;
+
+            resultBuilder.append("Timestamp: ").append(timeStamp).append(", ")
+                    .append("AP SSID: ").append(apSsid).append(", ")
+                    .append("BSSID: ").append(apBssid).append(", ")
+                    .append("RSSI: ").append(rssi).append(" dBm")
+                    .append("timestamp: ").append(timestemp).append("\n");
+
+            rawResultBuilder.append(result.toString()).append("\n");
+
+            // Log and write the result to a file
+            writeResultToFile(resultBuilder.toString());
+        }
+
+        // Update the UI
+        rttResultTextView.setText(resultBuilder.toString());
+        rawResultTextView.setText(rawResultBuilder.toString());
+
+        // Scroll to the bottom of the TextViews
+        ScrollView rttScrollView = findViewById(R.id.rtt_scrollview);
+        ScrollView rawScrollView = findViewById(R.id.raw_scrollview);
+
+        scrollToBottom(rttScrollView);
+        scrollToBottom(rawScrollView);
+    }
+
 
     // function to store result and show on screen
     private void processRangingResults(List<RangingResult> results) {

@@ -14,6 +14,7 @@
     <string-array name="ranging_mode_options">
         <item>Range to MC</item>
         <item>Range to Selected AP</item>
+        <item>Range to All RSSI</item>
     </string-array>
 
 </resources>
