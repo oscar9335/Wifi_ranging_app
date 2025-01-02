@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">RTT_rx_1</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main_activity.java">MainActivity.java</string>
+
+    <!-- Spinner options -->
+    <string-array name="frequency_options">
+        <item>1 Hz (1 second)</item>
+        <item>5 Hz (0.2 seconds)</item>
+        <item>10 Hz (0.1 seconds)</item>
+    </string-array>
+
+    <!-- Spinner options -->
+    <string-array name="ranging_mode_options">
+        <item>Range to MC</item>
+        <item>Range to Selected AP</item>
+    </string-array>
+
+</resources>

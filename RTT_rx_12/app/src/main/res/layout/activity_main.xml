@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <!-- Scrollable TextView for Wi-Fi RTT Result -->
+
+        <!-- Scrollable TextView for Raw RTT Results -->
+
+        <ScrollView
+            android:id="@+id/rtt_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"> <!-- Fixed height for scrollable TextView -->
+            <TextView
+                android:id="@+id/rtt_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Wi-Fi RTT Result"
+                android:textSize="20sp" />
+        </ScrollView>
+
+        <ScrollView
+            android:id="@+id/raw_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"
+            android:layout_marginTop="20dp">
+        <TextView
+            android:id="@+id/raw_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="Raw RTT Results"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"/>
+    </ScrollView>
+
+
+<!--        &lt;!&ndash; Spinner to select frequency (1 Hz, 5 Hz, 10 Hz) &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/frequency_spinner"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="20dp"-->
+<!--            android:entries="@array/frequency_options"/>-->
+
+<!--        &lt;!&ndash; Spinner to select ranging mode (specific BSSID, 802.11mc APs) &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/ranging_mode_spinner"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="20dp"-->
+<!--            android:entries="@array/ranging_mode_options"/>-->
+
+        <!-- Container for Two Spinners on the Left and EditText on the Right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:padding="10dp">
+
+            <!-- Container for the two Spinners -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <!-- Spinner to select frequency (1 Hz, 5 Hz, 10 Hz) -->
+                <Spinner
+                    android:id="@+id/frequency_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:entries="@array/frequency_options"/>
+
+                <!-- Spinner to select ranging mode (specific BSSID, 802.11mc APs) -->
+                <Spinner
+                    android:id="@+id/ranging_mode_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:entries="@array/ranging_mode_options"/>
+            </LinearLayout>
+
+            <!-- EditText on the right -->
+            <EditText
+                android:id="@+id/label_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Enter a label"
+                android:padding="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="Start Ranging"/>
+
+        <Button
+            android:id="@+id/stop_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="Stop Ranging" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
